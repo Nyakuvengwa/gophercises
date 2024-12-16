@@ -3,15 +3,19 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
 )
 
 func main() {
-	fmt.Println("Hello World. Lets do some math")
+	filenamePtr := flag.String("filename", "problems.csv", "Path to the CSV file")
+	timerInSecs := flag.Int64("time", 30, "Time in seconds")
+	// Parse the command-line flags
+	flag.Parse()
 
-	file, err := os.Open("problems.csv") // For read access.
+	file, err := os.Open(*filenamePtr) // For read access.
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -26,10 +30,10 @@ func main() {
 		fmt.Println(readerErr)
 	}
 
-	runQuiz(records)
+	runQuiz(records, *timerInSecs)
 }
 
-func runQuiz(records [][]string) {
+func runQuiz(records [][]string, time int64) {
 	reader := bufio.NewReader(os.Stdin)
 	correctAnswers := 0
 	totalQuestions := 0
@@ -50,7 +54,7 @@ func runQuiz(records [][]string) {
 		}
 		answer = strings.TrimSpace(answer)
 
-		if answer == records[i][1] {
+		if strings.Compare(answer, records[i][1]) == 0 {
 			fmt.Println("Well done. Good Job.")
 			correctAnswers++
 		} else {
